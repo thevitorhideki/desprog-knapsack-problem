@@ -47,7 +47,77 @@ Dentre os algoritmos existentes para a resolução desse problema, nesse handout
 ## Força bruta
 
 ---
-## Algoritmos gulosos
+## Algoritmos Gulosos
+
+Uma forma de tentar resolver o problema da Mochila Binária é utilizando o que chamamos de **estratégia gulosa** (*greedy*).  
+A ideia é simples: **escolher itens que parecem ser a melhor opção no momento**, sem se preocupar com escolhas futuras.
+
+O critério mais comum para fazer essa escolha é:
+- Selecionar os itens com **maior valor por peso** primeiro.
+
+Ou seja, calculamos para cada item o valor que ele agrega por cada quilo que ocupa, e tentamos preencher a mochila priorizando os que entregam o **melhor custo-benefício imediato**.
+
+Vamos deixar isso um pouco mais concreto usando o mesmo exemplo anterior:
+
+| Item | Peso (kg) | Valor | Valor/Peso |
+|------|-----------|-------|------------|
+| Kit primeiros socorros | 1 | 7 | 7.0 |
+| Barraca | 5 | 10 | 2.0 |
+| Lanterna | 1 | 5 | 5.0 |
+| Saco de dormir | 3 | 9 | 3.0 |
+| Nintendo Switch | 4 | 6 | 1.5 |
+| Cantil | 2 | 8 | 4.0 |
+
+Se usarmos o critério de **maior valor por peso**, a ordem de escolha seria:
+
+1. Kit de primeiros socorros (7.0)
+2. Lanterna (5.0)
+3. Cantil (4.0)
+4. Saco de dormir (3.0)
+5. Barraca (2.0)
+6. Nintendo Switch (1.5)
+
+E aí vamos colocando os itens na mochila **nessa ordem**, até não caber mais.
+
+!!!
+
+É importante lembrar que **algoritmos gulosos não garantem a melhor solução** para o problema da Mochila Binária.  
+Em muitos casos, o caminho guloso **leva a soluções boas, mas não ótimas**.
+
+!!!
+
+---
+### Um problema real com o algoritmo guloso:
+
+Seguindo o exemplo acima, usando o método guloso, colocaríamos o kit de primeiros socorros (1kg), a lanterna (1kg), e o cantil (2kg) — totalizando 4kg — ainda sobraria espaço para o saco de dormir (3kg). 
+
+Mas será que isso gera realmente o maior valor possível?  
+Em problemas de mochila **não fracionária**, o fato de escolher sempre o melhor custo-benefício imediato pode impedir que combinações melhores sejam formadas depois.
+
+É como montar um quebra-cabeça pegando sempre a "peça mais bonita" — você pode acabar com um monte de peças bonitas, mas sem completar o quadro.
+
+---
+??? Exercício mental
+
+Usando o critério guloso de valor por peso, tente montar a mochila até o limite de 10kg e calcule o valor final.  
+Depois, tente pensar: será que uma outra combinação daria um valor total maior?
+
+::: Gabarito
+Utilizando a estratégia gulosa:
+- Kit primeiros socorros (1kg, valor 7)
+- Lanterna (1kg, valor 5)
+- Cantil (2kg, valor 8)
+- Saco de dormir (3kg, valor 9)
+
+Peso total: 1 + 1 + 2 + 3 = 7kg  
+Valor total: 7 + 5 + 8 + 9 = **29**
+
+Ainda sobram 3kg, mas os itens restantes (Barraca e Nintendo Switch) são muito pesados ou pouco vantajosos.
+
+No entanto, **com outras combinações**, talvez fosse possível atingir um valor mais alto, priorizando cargas diferentes — é por isso que o guloso não é perfeito para Mochila 0/1!
+
+:::
+???
 
 ---
 ## Programação Dinâmica
