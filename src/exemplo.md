@@ -2,11 +2,14 @@
 
 ## O problema:
 
-Para o "problema da Mochila Binária" a ideia é imaginar que você tem uma mochila que suporta um peso máximo, e vários itens, **cada um com um peso e um valor próprios** *("valor" aqui não é nada relacionado a valor monetário ou coisa do tipo, é somente um valor arbitrário dado ao item para indicar sua "relevância").*
+Para o "problema da Mochila Binária" a ideia é imaginar que você tem uma mochila que suporta um peso máximo, e vários itens, **cada um com um peso e um valor próprios**.
+
+**Valor**, aqui, pode ser entendido como qualquer medida de importância: por exemplo, "quanto eu quero esse item para a viagem" — não necessariamente um valor financeiro.  
+Por exemplo: um **kit de primeiros socorros** pode ser mais "valioso" que um **Nintendo Switch**, mesmo que comercialmente seja o contrário.
 
 O objetivo é escolher quais itens colocar na mochila para **maximizar o valor total, sem ultrapassar o limite de peso**.
 
-Imagino que tudo esteja um pouco abstrato ainda, portanto, para deixar um pouco mais concreto, observe o exemplo abaixo:
+Para deixar isso mais concreto, veja o exemplo:
 
 | Item | Peso (kg) | Valor |
 |------|-----------|-------|
@@ -17,47 +20,36 @@ Imagino que tudo esteja um pouco abstrato ainda, portanto, para deixar um pouco 
 | Nintendo Switch | 4 | 6 |
 | Cantil | 2 | 8 |
 
-Nessa tabela existem alguns items aleatórios, cada um com seu respectivo peso e valor. Suponha que a capacidade máxima da sua mochila seja de 10 kg. Seu objetivo é selecionar os itens que vão na mochila de forma que o valor total transportado seja o maior possível, sem ultrapassar esse limite de peso.
+Sua mochila suporta **10 kg**. Você precisa escolher os itens que geram **o maior valor total** sem ultrapassar esse peso.
 
-É importante perceber que colocar os itens mais leves ou os mais valiosos isoladamente **nem sempre é a melhor estratégia**, mas você já deve ter imaginado isso.
+É importante perceber que **escolher os itens mais leves ou mais valiosos isoladamente nem sempre é a melhor estratégia**.
 
 !!!
-É importante ter em mente que o nome **"Mochila binária"** indica que os itens são ( 1 ) ou não ( 0 ) levados. Não é possível levar metade ou uma fração de um item.
+O termo **"mochila binária"** vem do fato de que, para cada item, só há duas opções: (1) levar o item ou (0) não levar. Não é possível levar frações de um item.
 !!!
 
-
+---
 ??? Exercício mental
 
-Quais você imagina que são algumas das outras abordagens possíveis para resolver esse problema? 
+Antes de continuar, que abordagens você imagina que poderiam ser usadas para resolver esse problema?
 
 ::: Gabarito
-Dentre os algoritmos existentes para a resolução desse problema, nesse handout discutiremos a respeito de 3 mais famosos:
-
-1. **Força bruta**, que envolve testar todas as combinações possíveis de itens (todas as sequências de 0s e 1s) e escolher a melhor.
-2. **Algoritmos gulosos** ("*greedy*"), em que os itens são escolhidos com base em um critério simples como **valor/peso**.
-3. **Programação Dinâmica**, que baseia-se em resolver subproblemas menores e usar essas soluções para montar a solução do problema maior.
-
-*Mais informações sobre esses e outros algoritmos podem ser acessados [nesse link](https://en.wikipedia.org/wiki/Knapsack_problem).*
+Existem algumas estratégias conhecidas:
+1. **Algoritmo guloso** (greedy): escolher os itens de maior valor/peso.
+2. **Força bruta**: testar todas as combinações possíveis.
+3. **Programação dinâmica**: resolver subproblemas menores e reutilizar suas soluções.
 :::
-
 ???
 
-
 ---
-## Força bruta
 
----
 ## Algoritmos Gulosos
 
-Uma forma de tentar resolver o problema da Mochila Binária é utilizando o que chamamos de **estratégia gulosa** (*greedy*).  
-A ideia é simples: **escolher itens que parecem ser a melhor opção no momento**, sem se preocupar com escolhas futuras.
+Uma primeira abordagem é usar uma **estratégia gulosa**.
 
-O critério mais comum para fazer essa escolha é:
-- Selecionar os itens com **maior valor por peso** primeiro.
+A ideia é simples: escolher primeiro os itens que **oferecem mais valor por unidade de peso**.
 
-Ou seja, calculamos para cada item o valor que ele agrega por cada quilo que ocupa, e tentamos preencher a mochila priorizando os que entregam o **melhor custo-benefício imediato**.
-
-Vamos deixar isso um pouco mais concreto usando o mesmo exemplo anterior:
+Por exemplo:
 
 | Item | Peso (kg) | Valor | Valor/Peso |
 |------|-----------|-------|------------|
@@ -68,59 +60,165 @@ Vamos deixar isso um pouco mais concreto usando o mesmo exemplo anterior:
 | Nintendo Switch | 4 | 6 | 1.5 |
 | Cantil | 2 | 8 | 4.0 |
 
-Se usarmos o critério de **maior valor por peso**, a ordem de escolha seria:
-
-1. Kit de primeiros socorros (7.0)
+Ordem gulosa:
+1. Kit primeiros socorros (7.0)
 2. Lanterna (5.0)
 3. Cantil (4.0)
 4. Saco de dormir (3.0)
 5. Barraca (2.0)
 6. Nintendo Switch (1.5)
 
-E aí vamos colocando os itens na mochila **nessa ordem**, até não caber mais.
+Vamos preenchendo a mochila **nessa ordem** até atingir o limite de peso.
 
 !!!
-
-É importante lembrar que **algoritmos gulosos não garantem a melhor solução** para o problema da Mochila Binária.  
-Em muitos casos, o caminho guloso **leva a soluções boas, mas não ótimas**.
-
+Embora seja rápido e intuitivo, o algoritmo guloso **não garante a solução ótima** para o problema da mochila binária.
 !!!
 
 ---
-### Um problema real com o algoritmo guloso:
+### Exemplo prático:
 
-Seguindo o exemplo acima, usando o método guloso, colocaríamos o kit de primeiros socorros (1kg), a lanterna (1kg), e o cantil (2kg) — totalizando 4kg — ainda sobraria espaço para o saco de dormir (3kg). 
+Se levarmos os três primeiros itens (kit, lanterna, cantil), teremos 1 + 1 + 2 = 4kg. Ainda sobraria espaço para o saco de dormir (3kg).
 
-Mas será que isso gera realmente o maior valor possível?  
-Em problemas de mochila **não fracionária**, o fato de escolher sempre o melhor custo-benefício imediato pode impedir que combinações melhores sejam formadas depois.
+Valor total: 7 + 5 + 8 + 9 = **29**.
 
-É como montar um quebra-cabeça pegando sempre a "peça mais bonita" — você pode acabar com um monte de peças bonitas, mas sem completar o quadro.
+Ainda assim, **não sabemos se existe uma combinação melhor**, porque o método guloso não explora todas as opções.
 
 ---
 ??? Exercício mental
 
-Usando o critério guloso de valor por peso, tente montar a mochila até o limite de 10kg e calcule o valor final.  
-Depois, tente pensar: será que uma outra combinação daria um valor total maior?
+Você consegue pensar em uma combinação de itens diferente que talvez gere um valor maior?
 
-::: Gabarito
-Utilizando a estratégia gulosa:
-- Kit primeiros socorros (1kg, valor 7)
-- Lanterna (1kg, valor 5)
-- Cantil (2kg, valor 8)
-- Saco de dormir (3kg, valor 9)
-
-Peso total: 1 + 1 + 2 + 3 = 7kg  
-Valor total: 7 + 5 + 8 + 9 = **29**
-
-Ainda sobram 3kg, mas os itens restantes (Barraca e Nintendo Switch) são muito pesados ou pouco vantajosos.
-
-No entanto, **com outras combinações**, talvez fosse possível atingir um valor mais alto, priorizando cargas diferentes — é por isso que o guloso não é perfeito para Mochila 0/1!
-
+:::
+Gabarito
+Com o método guloso, conseguimos 29 pontos de valor.  
+Testando outras combinações, poderíamos encontrar combinações com peso melhor distribuído e valor total mais alto.
 :::
 ???
 
 ---
+
+## Força Bruta
+
+Outra abordagem é usar **força bruta**.
+
+Aqui, testamos **todas as combinações possíveis** de itens:
+- Cada item pode ser escolhido (1) ou não escolhido (0).
+- Para `n` itens, existem `2^n` combinações.
+
+---
+
+### Exemplo prático:
+
+Com 6 itens:
+
+- 2² = 4 combinações → fácil de testar.
+- 2³ = 8 combinações → ainda ok.
+- 2⁶ = 64 combinações → já começa a aumentar.
+
+!!!
+Veja que a quantidade de combinações **cresce muito rápido** à medida que novos itens são adicionados — crescimento exponencial.
+!!!
+
+---
+### Limitações práticas:
+
+- 10 itens → 2¹⁰ = 1.024 combinações
+- 20 itens → 2²⁰ = 1.048.576 combinações
+- 30 itens → mais de 1 bilhão de combinações!
+
+Ou seja, a força bruta **sempre encontra a solução ótima**, mas **se torna inviável rapidamente**.
+
+---
+??? Exercício mental
+
+Quantas combinações teríamos para 7 itens?
+
+:::
+Gabarito
+2⁷ = **128 combinações**.
+:::
+???
+
+---
+
 ## Programação Dinâmica
 
+A **programação dinâmica** surge como uma solução intermediária:  
+**boa eficiência + garante a solução ótima**.
 
+---
 
+### Primeira parte: a ideia recursiva
+
+Antes de construir qualquer tabela, pense no problema assim:
+
+Para resolver o problema para `n` itens e capacidade `W`, temos duas opções:
+1. **Ignorar o item `n`**: o subproblema vira "resolver para os primeiros `n-1` itens e mesma capacidade `W`".
+2. **Escolher o item `n`** (se couber): o subproblema vira "resolver para os primeiros `n-1` itens e capacidade `W - peso[n]`".
+
+Cada decisão reduz o problema para uma versão **menor** dele mesmo.
+
+Esse é o coração da programação dinâmica:  
+**quebrar o problema em subproblemas menores e reaproveitar suas soluções**.
+
+!!!
+
+Modelamos o problema original como uma combinação de subproblemas menores — sem tabela ainda!
+
+!!!
+
+---
+### Segunda parte: a tabela
+
+Criamos uma **tabela `dp[i][w]`**:
+
+- **i** representa a quantidade de itens considerados (subconjunto dos primeiros `i` itens).
+- **w** representa a capacidade atual da mochila.
+
+Cada célula `dp[i][w]` responde:  
+**Qual é o maior valor que posso alcançar com os primeiros `i` itens e capacidade `w`?**
+
+---
+#### Preenchimento da tabela:
+
+Para cada célula `dp[i][w]`:
+
+- Se o item `i` **não for incluído**:  
+  - dp[i][w] = dp[i-1][w]
+- Se o item `i` **for incluído** (e o peso permitir):  
+  - dp[i][w] = dp[i-1][w - peso[i]] + valor[i]
+
+Escolhemos a melhor dessas duas opções.
+
+!!!
+Cada célula é preenchida em **tempo constante (O(1))**, e preenchemos toda a tabela em O(N × W).
+!!!
+
+---
+#### Exemplo prático:
+
+- Com 6 itens e capacidade 10kg:
+  - 7 linhas (considerando 0 item até 6 itens)
+  - 11 colunas (capacidades de 0kg a 10kg)
+
+A resposta final estará em `dp[6][10]`.
+
+---
+#### Complexidade:
+
+- **Tempo:** O(N × W)
+- **Espaço:** O(N × W)
+
+Com otimizações, podemos usar só **O(W)** de espaço (guardando só a linha anterior).
+
+---
+??? Exercício mental
+
+Por que dizemos que a complexidade é "pseudopolinomial"?
+
+:::
+Gabarito
+Porque o tempo depende do valor numérico de W, e não apenas do número de bits da entrada.  
+Se W for muito grande, o tempo de execução pode crescer demais.
+:::
+???
