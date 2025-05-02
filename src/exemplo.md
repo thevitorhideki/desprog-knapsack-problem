@@ -121,7 +121,6 @@ Capacidade da mochila: 50kg
 | 110                  | Item 1, Item 2       | 50        | 220    | Sim ✅  |
 | 111                  | Itens 1, 2, 3        | 60        | 280    | Não     |
 
-
 ---
 
 ## Abordagem recursiva ingênua
