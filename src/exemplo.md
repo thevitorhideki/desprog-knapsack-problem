@@ -86,20 +86,25 @@ Seguindo a ideia do algoritmo guloso, colocaríamos os itens 3 e 1 na mochila e 
 
 Como foi possível observar, o algoritmo guloso nem sempre resolve o problema, já que ele usa o critério de "eficiência" (valor/peso), e o algoritmo de força bruta rapidamente se torna impraticável por conta de sua complexidade exponencial.
 
-Agora que percebemos que a questão não é tão simples de resolver, vamos para a abordagem recursiva. Nela vamos dividir o problema em subproblemas menores, com menos items e/ou menor capacidade, seguindo a mesma ideia de [dividir e conquistar](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm).
+Agora que percebemos que a questão não é tão simples de resolver, vamos para a abordagem recursiva. Nela vamos dividir o problema em subproblemas menores, com menos items e/ou menor capacidade, seguindo a ideia de [dividir e conquistar](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm).
 
-Estamos interessados, portanto, em uma função que recebe a capacidade da mochila e duas sequências: os pesos e os valores dos items, no final devolvendo qual é o valor máximo dos items que serão adicionados.
+??? Atividade
+Estamos interessados, portanto, em uma função que recebe: os pesos, os valores dos items, a quantidade de itens e a capacidade (W) da mochila, devolvendo, ao final, o valor máximo dos items que serão adicionados.
 
+Tente implementar a assinatura dessa função.
+::: Gabarito
 ```c
-int knapsack(int pesos[], int valores[], int n, int capacidade);
+int knapsack(int pesos[], int valores[], int n, int W);
 ```
+:::
+???
 
-Para a base da recursão, podemos observar que:
+Já para a montagem do algoritmo recursivo, para a base da recursão podemos observar que:
 
-* se não temos mais items para considerar (n = 0), o valor é 0;
+* se não temos mais items para considerar (`py n = 0`), o valor é 0;
 * se a capacidade da mochila é 0, não podemos incluir mais nada, então o valor é 0
 
-Além disso, precisamos nos atentar para um caso em que o item atual é muito pesado para a mochila. Nele não é preciso escolher se ele vai ou não vai entrar, só podemos não incluir ele.
+Além disso, precisamos nos atentar para um caso em que o item atual é muito pesado para a mochila. Nele não é preciso escolher se ele vai ou não vai entrar, só podemos não incluí-lo.
 
 Agora para determinar se o item vai ou não entrar na mochila, devemos calcular o valor para cada situação e retornar o maior valor entre as duas opções.
 
@@ -110,7 +115,7 @@ Escreva uma função recursiva que recebe:
 * Um vetor *pesos* de inteiros;
 * Um vetor *valores* de inteiros;
 * Um inteiro *n* que representa o tamanho de *pesos* e *valores*;
-* Um inteiro *capacidade* que representa o tamanho da mochila
+* Um inteiro *W* que representa a capacidade total da mochila
 
 e calcula qual é o valor máximo dos items que serão levados na mochila.
 
@@ -121,7 +126,7 @@ Dica: Para implementar o algoritmo descrito acima, pense no passo a passo da con
 Passo 1: entenda o que a função recebe e o que deveria fazer.
 
 ```c
-int knapsack(int pesos[], int valores[], int n, int capacidade) {
+int knapsack(int pesos[], int valores[], int n, int W) {
     // devolve o valor máximo que podemos obter com os primeiros n itens 
     // usando uma mochila com capacidade limitada
 }
@@ -130,7 +135,7 @@ int knapsack(int pesos[], int valores[], int n, int capacidade) {
 Passo 2: adicione uma chamada recursiva ao código da função.
 
 ```c
-int knapsack(int pesos[], int valores[], int n, int capacidade) {
+int knapsack(int pesos[], int valores[], int n, int W) {
     knapsack(pesos, valores, ???, ???);
 }
 ```
@@ -138,30 +143,30 @@ int knapsack(int pesos[], int valores[], int n, int capacidade) {
 Passo 3: passe para a chamada recursiva um parâmetro menor.
 
 ```c
-int knapsack(int pesos[], int valores[], int n, int capacidade) {
-    knapsack(pesos, valores, n-1, capacidade); // considera um item a menos
+int knapsack(int pesos[], int valores[], int n, int W) {
+    knapsack(pesos, valores, n-1, W); // considera um item a menos
 }
 ```
 
 Passo 4: não simularás e terás fé.
 
 ```c
-int knapsack(int pesos[], int valores[], int n, int capacidade) {
-    knapsack(pesos, valores, n-1, capacidade); // devolve o valor máximo considerando n-1 itens
+int knapsack(int pesos[], int valores[], int n, int W) {
+    knapsack(pesos, valores, n-1, W); // devolve o valor máximo considerando n-1 itens
 }
 ```
 
 Passo 5: você tem fé na resposta da chamada recursiva, então use-a.
 
 ```c
-int knapsack(int pesos[], int valores[], int n, int capacidade) {
+int knapsack(int pesos[], int valores[], int n, int W) {
     // Mas espere... temos duas opções: incluir ou não o item n
     
     // Opção 1: não incluir o item n (usar a fé diretamente)
-    int valor_sem_incluir = knapsack(pesos, valores, n-1, capacidade);
+    int valor_sem_incluir = knapsack(pesos, valores, n-1, W);
     
     // Opção 2: incluir o item n (se ele couber)
-    int valor_incluindo = valores[n-1] + knapsack(pesos, valores, n-1, capacidade - pesos[n-1]);
+    int valor_incluindo = valores[n-1] + knapsack(pesos, valores, n-1, W - pesos[n-1]);
     
     // Retornar o melhor dos dois valores
     return (valor_incluindo > valor_sem_incluir) ? valor_incluindo : valor_sem_incluir;
@@ -171,16 +176,16 @@ int knapsack(int pesos[], int valores[], int n, int capacidade) {
 Passo 6: isole o caso em que o parâmetro é o menor possível.
 
 ```c
-int knapsack(int pesos[], int valores[], int n, int capacidade) {
+int knapsack(int pesos[], int valores[], int n, int W) {
     // Caso base: se não há mais itens ou capacidade
-    if (n == 0 || capacidade == 0) {
+    if (n == 0 || W == 0) {
     }
     
     // Opção 1: não incluir o item n
-    int valor_sem_incluir = knapsack(pesos, valores, n-1, capacidade);
+    int valor_sem_incluir = knapsack(pesos, valores, n-1, W);
     
     // Opção 2: incluir o item n (se ele couber)
-    int valor_incluindo = valores[n-1] + knapsack(pesos, valores, n-1, capacidade - pesos[n-1]);
+    int valor_incluindo = valores[n-1] + knapsack(pesos, valores, n-1, W - pesos[n-1]);
     
     // Retornar o melhor dos dois valores
     return (valor_incluindo > valor_sem_incluir) ? valor_incluindo : valor_sem_incluir;
@@ -190,31 +195,49 @@ int knapsack(int pesos[], int valores[], int n, int capacidade) {
 Passo 7: a solução desse caso é trivial, então calcule ela direto.
 
 ```c
-int knapsack(int pesos[], int valores[], int n, int capacidade) {
+int knapsack(int pesos[], int valores[], int n, int W) {
     // Caso base: se não há mais itens ou capacidade
-    if (n == 0 || capacidade == 0) {
+    if (n == 0 || W == 0) {
         return 0; // Não podemos obter nenhum valor
     }
     
     // Caso especial: se o item atual não cabe na mochila
-    if (pesos[n-1] > capacidade) {
-        return knapsack(pesos, valores, n-1, capacidade); // Só podemos não incluí-lo
+    if (pesos[n-1] > W) {
+        return knapsack(pesos, valores, n-1, W); // Só podemos não incluí-lo
     }
     
     // Opção 1: não incluir o item n
-    int valor_sem_incluir = knapsack(pesos, valores, n-1, capacidade);
+    int valor_sem_incluir = knapsack(pesos, valores, n-1, W);
     
     // Opção 2: incluir o item n
-    int valor_incluindo = valores[n-1] + knapsack(pesos, valores, n-1, capacidade - pesos[n-1]);
+    int valor_incluindo = valores[n-1] + knapsack(pesos, valores, n-1, W - pesos[n-1]);
     
     // Retornar o melhor dos dois valores
     return (valor_incluindo > valor_sem_incluir) ? valor_incluindo : valor_sem_incluir;
 }
 ```
-
 ???
 
-Apesar desse algoritmo funcionar para o problema da mochila binária, ele não é nem um pouco eficiente. Vamos pensar: para cada item, fazemos duas escolhas, incluir ou não incluir ele; isso cria uma árvore de recursão binária completa com altura de *n* (número de items) e uma árvore binária com altura *n* tem 2^n-1 nós no pior caso.
+Dessa forma, montamos o algoritmo **recursivo** que resolve o problema da mochila binária: 
+
+``` c
+int knapsack(int pesos[], int valores[], int n, int W) {
+    if (n == 0 || W == 0) {
+        return 0;
+    }
+    
+    if (pesos[n-1] > W) {
+        return knapsack(pesos, valores, n-1, W);
+    }
+    
+    int valor_sem_incluir = knapsack(pesos, valores, n-1, W);
+    int valor_incluindo = valores[n-1] + knapsack(pesos, valores, n-1, W - pesos[n-1]);
+
+    return (valor_incluindo > valor_sem_incluir) ? valor_incluindo : valor_sem_incluir;
+}
+```
+
+Apesar desse algoritmo funcionar para o problema da mochila binária, ele não eficiente. Vamos pensar: para cada item, fazemos duas escolhas, incluir ou não incluir, isso cria uma árvore de recursão binária completa com altura *n* (número de items) e uma árvore binária com altura *n* tem $2^{n-1}$ nós no pior caso.
 
 ```bash
 knapsack(n, W)
@@ -232,10 +255,68 @@ knapsack(n, W)
 
 Vamos entender com um exemplo numérico:
 
-* Com 10 itens: até ~1000 chamadas recursivas (2^10)
-* Com 20 itens: até ~1000000 chamadas recursivas (2^20)
-* Com 30 itens: até ~1000000000 chamadas recursivas (2^30)
+* Com 10 itens: até ~1000 chamadas recursivas ($2^{10}$)
+* Com 20 itens: até ~1000000 chamadas recursivas ($2^{20}$)
+* Com 30 itens: até ~1000000000 chamadas recursivas ($2^{30}$)
 
 A complexidade exponencial significa que o tempo de execução dobra a cada item adicional que incluímos no problema, como foi visto na solução de força bruta.
 
 ## O algoritmo melhorado
+
+Para superar o problema da complexidade crescer muito rapidamente na abordagem recursiva pura, utilizaremos **Programação Dinâmica**. 
+
+A ideia central do algoritmo é construirmos uma **tabela** que armazena as soluções ótimas de subproblemas menores, evitando recalcular recursivamente o mesmo estado várias vezes. Essa estratégia é conhecida como [memoização](https://en.wikipedia.org/wiki/Memoization).
+
+Começaremos entendendo como funciona a tabela:
+
+- Vamos criar uma matriz `py memo` de dimensões `py (n+1) x (W+1)`, onde:
+    - `py n` é o número de itens.
+    - `py W` é a capacidade máxima da mochila.
+    
+- Cada célula `py memo[i][w]` irá guardar o **valor máximo** que podemos obter considerando apenas os primeiros `py i` itens e uma capacidade de mochila `py w`.
+- A tabela deve ser inicializada com todas as suas células `py memo[i][w] = -1`.
+
+<br>
+
+??? Atividade
+Considerando a função `py knapsack` definida anteriormente, como deveria ser a nova assinatura da função `py knapsack_pd` para que a tabela de memoização seja incluída?
+
+::: Gabarito
+``` c
+int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[n+1][W+1]);
+```
+:::
+???
+
+??? Atividade
+Escreva o conteúdo da função `py knapsack_pd`.
+
+::: Gabarito
+``` c
+int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[n+1][W+1]) {
+    if (n == 0 || W == 0) {
+        return 0;
+    }
+    
+    if (memo[n][W] != -1) {
+        return memo[n][W];
+    }
+
+    int resultado;
+    if (pesos[n-1] > W) {
+        resultado = knapsack_pd(pesos, valores, n-1, W, memo);
+    } else {
+        int sem = knapsack_pd(pesos, valores, n-1, W, memo);
+        int com = valores[n-1] + knapsack_pd(pesos, valores, n-1, W - pesos[n-1], memo);
+        resultado = (com > sem) ? com : sem;
+    }
+
+    memo[n][W] = resultado;
+
+    return resultado;
+}
+```
+
+Esta implementação reduz drasticamente o tempo de execução ao evitar resolver subproblemas que já foram resolvidos. A complexidade temporal passa de $O(2^n)$ para $O(n×W)$, onde `py n` é o número de itens e `py W` é a capacidade da mochila.
+:::
+???
