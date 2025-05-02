@@ -82,7 +82,7 @@ Seguindo a ideia do algoritmo guloso, colocaríamos os itens 3 e 1 na mochila e 
 
 ---
 
-## Algoritmo ingênuo
+## Abordagem recursiva ingênua
 
 Como foi possível observar, o algoritmo guloso nem sempre resolve o problema, já que ele usa o critério de "eficiência" (valor/peso), e o algoritmo de força bruta rapidamente se torna impraticável por conta de sua complexidade exponencial.
 
@@ -101,7 +101,7 @@ int knapsack(int pesos[], int valores[], int n, int W);
 
 Já para a montagem do algoritmo recursivo, para a base da recursão podemos observar que:
 
-* se não temos mais items para considerar (`py n = 0`), o valor é 0;
+* se não temos mais items para considerar (`c n = 0`), o valor é 0;
 * se a capacidade da mochila é 0, não podemos incluir mais nada, então o valor é 0
 
 Além disso, precisamos nos atentar para um caso em que o item atual é muito pesado para a mochila. Nele não é preciso escolher se ele vai ou não vai entrar, só podemos não incluí-lo.
@@ -246,10 +246,10 @@ knapsack(n, W)
             ...
         knapsack(n-1, W-w4)
             ...
-    knapsack(n, W)
-        knapsack(n-1, W-w3)
+    knapsack(n-1, W)
+        knapsack(n-2, W-w3)
             ...
-        knapsack(n, W)
+        knapsack(n-2, W)
             ...
 ```
 
@@ -267,33 +267,33 @@ Para superar o problema da complexidade crescer muito rapidamente na abordagem r
 
 A ideia central do algoritmo é construirmos uma **tabela** que armazena as soluções ótimas de subproblemas menores, evitando recalcular recursivamente o mesmo estado várias vezes. Essa estratégia é conhecida como [memoização](https://en.wikipedia.org/wiki/Memoization).
 
-Começaremos entendendo como funciona a tabela:
+Começaremos entendendo o que é a tabela:
 
-- Vamos criar uma matriz `py memo` de dimensões `py (n+1) x (W+1)`, onde:
-    - `py n` é o número de itens.
-    - `py W` é a capacidade máxima da mochila.
+- Vamos criar uma matriz `c memo` de dimensões `c (n+1) x (W+1)`, onde:
+    - `c n` é o número de itens.
+    - `c W` é a capacidade máxima da mochila.
     
-- Cada célula `py memo[i][w]` irá guardar o **valor máximo** que podemos obter considerando apenas os primeiros `py i` itens e uma capacidade de mochila `py w`.
-- A tabela deve ser inicializada com todas as suas células `py memo[i][w] = -1`.
+- Cada célula `c memo[i][w]` irá guardar o **valor máximo** que podemos obter considerando apenas os primeiros `c i` itens e uma capacidade de mochila `c w`.
+- A tabela deve ser inicializada com todas as suas células `c memo[i][w] = -1`.
 
 <br>
 
 ??? Atividade
-Considerando a função `py knapsack` definida anteriormente, como deveria ser a nova assinatura da função `py knapsack_pd` para que a tabela de memoização seja incluída?
+Considerando a função `c knapsack` definida anteriormente, como deveria ser a nova assinatura da função `c knapsack_pd` para que a tabela de memoização seja incluída?
 
 ::: Gabarito
 ``` c
-int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[n+1][W+1]);
+int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[][W+1]);
 ```
 :::
 ???
 
 ??? Atividade
-Escreva o conteúdo da função `py knapsack_pd`.
+Escreva o conteúdo da função `c knapsack_pd`.
 
 ::: Gabarito
 ``` c
-int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[n+1][W+1]) {
+int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[][W+1]) {
     if (n == 0 || W == 0) {
         return 0;
     }
@@ -317,6 +317,32 @@ int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[n+1][W+1]) {
 }
 ```
 
-Esta implementação reduz drasticamente o tempo de execução ao evitar resolver subproblemas que já foram resolvidos. A complexidade temporal passa de $O(2^n)$ para $O(n×W)$, onde `py n` é o número de itens e `py W` é a capacidade da mochila.
+:::
+???
+
+Esta implementação reduz drasticamente o tempo de execução ao evitar resolver subproblemas que já foram resolvidos. A complexidade temporal passa de $O(2^n)$ para $O(n×W)$, onde `c n` é o número de itens e `c W` é a capacidade da mochila.
+
+Para dar uma ideia da magnitude dessa otimização, pense no exercício abaixo:
+
+??? Atividade
+Considerando as condições abaixo:
+
+`c int pesos[] = [12,  7, 19, 24,  5, 17, 10, 34, 2,  27, 14,  8, 30, 21,  3, 16, 25, 11, 28,`
+`c 9, 20,  6, 18, 29, 13, 22,  4, 26, 15, 31]`
+
+`c int valores = [120,  65, 210, 300,  40, 175, 100, 400, 15, 350, 155,  80, 420, 260,  25, 180,`
+`c 310, 135, 375,  95, 240,  55, 195, 390, 145, 270,  35, 360, 160, 430]`
+
+`c W = 80`
+
+`c n = 30`
+
+Quantas vezes você imagina que o algoritmo recursivo ingênuo será invocado e quantas vezes o algoritmo de programação dinâmica será invocado?
+::: Gabarito
+O algoritmo ingênuo foi chamado um total de `c 1099019` vezes;
+
+Já o algoritmo de programação dinâmica foi chamado apenas `c 3198` vezes.
+
+Agora tente alterar o valor de `c W` para um número maior que 80.
 :::
 ???
