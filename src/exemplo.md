@@ -29,8 +29,8 @@ Quais você imagina que são algumas das outras abordagens possíveis para resol
 ::: Gabarito
 Dentre os algoritmos existentes para a resolução desse problema, nesse handout discutiremos a respeito de 3 mais famosos:
 
-1. **Força bruta**, que envolve testar todas as combinações possíveis de itens (todas as sequências de 0s e 1s) e escolher a melhor.
-2. **Algoritmos gulosos** ("*greedy*"), em que os itens são escolhidos com base em um critério simples como **valor/peso**.
+1. **Algoritmos gulosos** ("*greedy*"), em que os itens são escolhidos com base em um critério simples como **valor/peso**.
+2. **Força bruta**, que envolve testar todas as combinações possíveis de itens (todas as sequências de 0s e 1s) e escolher a melhor.
 3. **Programação Dinâmica**, que baseia-se em resolver subproblemas menores e usar essas soluções para montar a solução do problema maior.
 
 *Mais informações sobre esses e outros algoritmos podem ser acessados [nesse link](https://en.wikipedia.org/wiki/Knapsack_problem).*
@@ -80,47 +80,50 @@ Seguindo a ideia do algoritmo guloso, colocaríamos os itens 3 e 1 na mochila e 
 
 ## Força bruta
 
-Outra abordagem é usar **força bruta**.
- A força bruta é mais simples:  
- **testar todas as combinações possíveis** e escolher a melhor.
+Outra abordagem é usar **força bruta**. Essa abordagem é mais simples, pois basta **testar todas as combinações possíveis** e escolher a melhor.
 
- "ou seja, a que não excede o limite de peso e maximiza o valor total"
- 
- Aqui, testamos **todas as combinações possíveis** de itens:
- - Cada item pode estar ou não estar na mochila (1 ou 0)
- - Para `n` itens, existem `2^n` combinações.
- Cada item pode estar ou não estar na mochila.  
- Com `n` itens, existem `2^n` combinações possíveis.
 
- Para cada uma dessas combinações,devemos:
- - Verificar se o peso total dos itens escolhidos é menor ou igual à capacidade.
- - Se for válido, calcular o valor total dos itens.
- - Comparar com os valores anteriores e manter a melhor combinação encontrada até o momento
+- Cada item pode estar ou não estar na mochila (1 ou 0)
 
- Exemplo prático:
- - considere a seguinte situação:
+- Para `c n` itens, existem $2^n$ combinações. Cada item pode estar ou não estar na mochila.
 
-| Item   | Peso (kg) | Valor  | Valor/Peso |
-|--------|-----------|--------|------------|
-| Item 3 |    10     |   60   |    6.0     |
-| Item 1 |    20     |  100   |    5.0     |
-| Item 2 |    30     |  120   |    4.0     |
+Para cada uma dessas combinações, devemos:
+- Verificar se o peso total dos itens escolhidos é menor ou igual à capacidade.
+- Se for válido, calcular o valor total dos itens.
+- Comparar com os valores anteriores e manter a melhor combinação encontrada até o momento
 
-Capacidade da mochila: 50kg
-- Vamos testar todas as `2^3` = 8 combinações possíveis:
+
+??? Atividade
+
+Tente montar as combinações possíveis para o algoritmo de força bruta utilizando os dados abaixo:
+
+| Item   | Peso (kg) | Valor  |
+|--------|-----------|--------|
+| Item 1 |    20     |  100   |
+| Item 2 |    30     |  120   |
+| Item 3 |    10     |   60   |
+
+- Capacidade da mochila: 50kg
+
+::: Gabarito
+- Vamos testar todas as $2^3 = 8$ combinações possíveis:
 
 
 | Combinação (binária) | Itens escolhidos     | Peso (kg) | Valor  | Válida? |
 |----------------------|----------------------|-----------|--------|---------|
 | 000                  | —                    | 0         | 0      | Sim     |
-| 001                  | Item 3               | 10        | 60     | Sim     |
+| 001                  | Item 1               | 20        | 100    | Sim     |
 | 010                  | Item 2               | 30        | 120    | Sim     |
-| 011                  | Item 2, Item 3       | 40        | 180    | Sim     |
-| 100                  | Item 1               | 20        | 100    | Sim     |
+| {red}(011)                  | {red}(Item 1, Item 2)       | {red}(50)        | {red}(220)    | {red}(Sim)  |
+| 100                  | Item 3               | 10        | 60     | Sim     |
 | 101                  | Item 1, Item 3       | 30        | 160    | Sim     |
-| 110                  | Item 1, Item 2       | 50        | 220    | Sim ✅  |
+| 110                  | Item 2, Item 3       | 40        | 180    | Sim     |
 | 111                  | Itens 1, 2, 3        | 60        | 280    | Não     |
 
+Mas como podemos notar, a complexidade desse algoritmo é $O(2^n)$ e o tempo de execução cresce rapidamente para maiores quantidade de itens.
+:::
+
+???
 ---
 
 ## Abordagem recursiva ingênua
@@ -300,7 +303,13 @@ Vamos entender com um exemplo numérico:
 * Com 20 itens: até ~1000000 chamadas recursivas ($2^{20}$)
 * Com 30 itens: até ~1000000000 chamadas recursivas ($2^{30}$)
 
-A complexidade exponencial significa que o tempo de execução dobra a cada item adicional que incluímos no problema, como foi visto na solução de força bruta.
+<br>
+
+
+**Mas pera aí, nós saímos de um algoritmo que funcionava, era mais fácil de entender e tinha mesma complexidade que esse aqui. Por que eu iria querer usar a versão recursiva?**
+
+Vamos nos acalmar que tudo o que foi apresentado até agora **servirá de alicerce** para uma otimização tremenda para esse algoritmo.
+
 
 ## O algoritmo melhorado
 
