@@ -372,6 +372,17 @@ int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[][W+1]) {
 
 Esta implementação reduz drasticamente o tempo de execução ao evitar resolver subproblemas que já foram resolvidos. A complexidade temporal passa de $O(2^n)$ para $O(n×W)$, onde `c n` é o número de itens e `c W` é a capacidade da mochila.
 
+Veja abaixo, uma animação do preenchimento da tabela utilizando o algoritmo melhorado para o seguinte exemplo:
+
+```c
+int pesos[] = {8, 7, 9, 4, 5, 2};
+int valores[] = {120, 65, 210, 300, 40, 175};
+int n = 6;
+int W = 10;
+```
+
+:knapsack
+
 Para dar uma ideia da magnitude dessa otimização, pense no exercício abaixo:
 
 ??? Atividade
