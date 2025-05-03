@@ -80,6 +80,47 @@ Seguindo a ideia do algoritmo guloso, colocaríamos os itens 3 e 1 na mochila e 
 
 ## Força bruta
 
+Outra abordagem é usar **força bruta**.
+ A força bruta é mais simples:  
+ **testar todas as combinações possíveis** e escolher a melhor.
+
+ "ou seja, a que não excede o limite de peso e maximiza o valor total"
+ 
+ Aqui, testamos **todas as combinações possíveis** de itens:
+ - Cada item pode estar ou não estar na mochila (1 ou 0)
+ - Para `n` itens, existem `2^n` combinações.
+ Cada item pode estar ou não estar na mochila.  
+ Com `n` itens, existem `2^n` combinações possíveis.
+
+ Para cada uma dessas combinações,devemos:
+ - Verificar se o peso total dos itens escolhidos é menor ou igual à capacidade.
+ - Se for válido, calcular o valor total dos itens.
+ - Comparar com os valores anteriores e manter a melhor combinação encontrada até o momento
+
+ Exemplo prático:
+ - considere a seguinte situação:
+
+| Item   | Peso (kg) | Valor  | Valor/Peso |
+|--------|-----------|--------|------------|
+| Item 3 |    10     |   60   |    6.0     |
+| Item 1 |    20     |  100   |    5.0     |
+| Item 2 |    30     |  120   |    4.0     |
+
+Capacidade da mochila: 50kg
+- Vamos testar todas as `2^3` = 8 combinações possíveis:
+
+
+| Combinação (binária) | Itens escolhidos     | Peso (kg) | Valor  | Válida? |
+|----------------------|----------------------|-----------|--------|---------|
+| 000                  | —                    | 0         | 0      | Sim     |
+| 001                  | Item 3               | 10        | 60     | Sim     |
+| 010                  | Item 2               | 30        | 120    | Sim     |
+| 011                  | Item 2, Item 3       | 40        | 180    | Sim     |
+| 100                  | Item 1               | 20        | 100    | Sim     |
+| 101                  | Item 1, Item 3       | 30        | 160    | Sim     |
+| 110                  | Item 1, Item 2       | 50        | 220    | Sim ✅  |
+| 111                  | Itens 1, 2, 3        | 60        | 280    | Não     |
+
 ---
 
 ## Abordagem recursiva ingênua
