@@ -2,7 +2,7 @@
 
 ## O problema
 
-Para o "problema da Mochila Binária" a ideia é imaginar que você tem uma mochila que suporta um peso máximo, e vários itens, **cada um com um peso e um valor próprios** *("valor" aqui não é nada relacionado a valor monetário ou coisa do tipo, é somente um valor arbitrário dado ao item para indicar sua "relevância").*
+Para o "problema da Mochila Binária" a ideia é imaginar que você tem uma mochila que suporta um peso máximo, e vários itens, **cada um com um peso e um valor próprios**.
 
 O objetivo é escolher quais itens colocar na mochila para **maximizar o valor total, sem ultrapassar o limite de peso**.
 
@@ -22,27 +22,11 @@ Nessa tabela existem alguns items aleatórios, cada um com seu respectivo peso e
 É importante ter em mente que o nome **"Mochila binária"** indica que os itens são ( 1 ) ou não ( 0 ) levados. Não é possível levar metade ou uma fração de um item.
 !!!
 
-??? Exercício mental
-
-Quais você imagina que são algumas das outras abordagens possíveis para resolver esse problema?
-
-::: Gabarito
-Dentre os algoritmos existentes para a resolução desse problema, nesse handout discutiremos a respeito de 3 mais famosos:
-
-1. **Algoritmos gulosos** ("*greedy*"), em que os itens são escolhidos com base em um critério simples como **valor/peso**.
-2. **Força bruta**, que envolve testar todas as combinações possíveis de itens (todas as sequências de 0s e 1s) e escolher a melhor.
-3. **Programação Dinâmica**, que baseia-se em resolver subproblemas menores e usar essas soluções para montar a solução do problema maior.
-
-*Mais informações sobre esses e outros algoritmos podem ser acessados [nesse link](https://en.wikipedia.org/wiki/Knapsack_problem).*
-:::
-
-???
-
 ---
 
 ## Algoritmos gulosos
 
-A segunda abordagem, que é também uma das mais fáceis de pensar intuitivamente, é a dos algoritmos gulosos.
+A primeira abordagem que iremos trazer para esse problema, que é também uma das mais fáceis de pensar intuitivamente, é a dos algoritmos gulosos.
 
 Nessa estratégia, a cada iteração escolhemos o item que parece o melhor naquele momento.  No caso da mochila, o critério clássico é ordenar pelos itens de maior valor por peso e enchê-la nessa ordem.
 
@@ -72,7 +56,15 @@ Tenta pegar o **Item 1**: cabe (10+20 ≤ 50), soma peso = 30, valor = 160
 
 Tenta pegar o **Item 2**: cabe? (30+30 = 60 kg > 50) → **não cabe, ignora**
 
-Seguindo a ideia do algoritmo guloso, colocaríamos os itens 3 e 1 na mochila e teríamos um valor final de 160. Contudo, vemos claramente que **{red}(essa não é a melhor solução)**, já que o maior valor possível de ser obtido para esse mochila, seria de 220 ao escolher os itens 1 e 2.
+Dessa forma, colocaríamos os itens 3 e 1 na mochila e teríamos um {red}(**valor final de 160.**) 
+:::
+???
+
+??? Exercício
+Considerando o resultado anterior, esse é o maior valor que podemos obter para essa mochila?
+
+::: Gabarito
+Como o exemplo não é difícil vemos claramente que a solução do algoritmo guloso **{red}(não é a melhor solução)**, já que o maior valor possível de ser obtido para esse mochila, seria de 220 ao escolher os itens 1 e 2.
 :::
 ???
 
@@ -82,48 +74,19 @@ Seguindo a ideia do algoritmo guloso, colocaríamos os itens 3 e 1 na mochila e 
 
 Outra abordagem é usar **força bruta**. Essa abordagem é mais simples, pois basta **testar todas as combinações possíveis** e escolher a melhor.
 
-
-- Cada item pode estar ou não estar na mochila (1 ou 0)
-
-- Para `c n` itens, existem $2^n$ combinações. Cada item pode estar ou não estar na mochila.
-
-Para cada uma dessas combinações, devemos:
-- Verificar se o peso total dos itens escolhidos é menor ou igual à capacidade.
-- Se for válido, calcular o valor total dos itens.
-- Comparar com os valores anteriores e manter a melhor combinação encontrada até o momento
-
-
 ??? Atividade
-
-Tente montar as combinações possíveis para o algoritmo de força bruta utilizando os dados abaixo:
-
-| Item   | Peso (kg) | Valor  |
-|--------|-----------|--------|
-| Item 1 |    20     |  100   |
-| Item 2 |    30     |  120   |
-| Item 3 |    10     |   60   |
-
-- Capacidade da mochila: 50kg
+Sem listar todas as combinações, **deduza a complexidade** do algoritmo de força bruta em termos de `c n` (número de itens).
 
 ::: Gabarito
-- Vamos testar todas as $2^3 = 8$ combinações possíveis:
+Para cada um dos `c n` itens, há duas escolhas: incluí-lo (1) ou não (0).  
+- Total de combinações possíveis:  $2^n$
+- Avaliar a possibilidade de ser a combinação correta: $n$
 
-
-| Combinação (binária) | Itens escolhidos     | Peso (kg) | Valor  | Válida? |
-|----------------------|----------------------|-----------|--------|---------|
-| 000                  | —                    | 0         | 0      | Sim     |
-| 001                  | Item 1               | 20        | 100    | Sim     |
-| 010                  | Item 2               | 30        | 120    | Sim     |
-| {red}(011)                  | {red}(Item 1, Item 2)       | {red}(50)        | {red}(220)    | {red}(Sim)  |
-| 100                  | Item 3               | 10        | 60     | Sim     |
-| 101                  | Item 1, Item 3       | 30        | 160    | Sim     |
-| 110                  | Item 2, Item 3       | 40        | 180    | Sim     |
-| 111                  | Itens 1, 2, 3        | 60        | 280    | Não     |
-
-Mas como podemos notar, a complexidade desse algoritmo é $O(2^n)$ e o tempo de execução cresce rapidamente para maiores quantidade de itens.
+Portanto, podemos concluir que o algoritmo de força bruta possui complexidade exponencial $O(2^n)$
+   
 :::
-
 ???
+
 ---
 
 ## Abordagem recursiva ingênua
