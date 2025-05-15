@@ -201,81 +201,93 @@ Começaremos entendendo o que é a tabela:
 <br>
 
 ??? Atividade
-Considerando a função `c knapsack` definida anteriormente, como deveria ser a nova assinatura da função `c knapsack_pd` para que a tabela de memoização seja incluída?
+Considerando os valores abaixo:
+
+```c
+int pesos[] = {1, 7, 3, 4, 2, 5};
+int valores[] = {120, 65, 160, 200, 175, 40};
+int n = 6;
+int W = 10;
+```
+
+Quais são os valores que preenchem corretamente as células `c memo[i][0]` *(todas as células da primeira linha)* e `c memo[0][w]` *(todas as células da primeira coluna)*.
 
 ::: Gabarito
-``` c
-int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[][W+1]);
-```
+Dizer que `c w = 0` é o mesmo que dizer que a mochila não possui nenhum espaço restante, portanto, o valor possível de ser obtido nesse caso é 0.
+
+O mesmo se aplica para `c i = 0`. Não é possível obter valor se não há itens a serem colocados na mochila.
+
+Dessa forma, tanto a primeira linha quanto a primeira coluna devem ter seus valores zerados:
+
+![](linha_coluna_0.png)
 :::
 ???
 
-??? Atividade
-Escreva o conteúdo da função `c knapsack_pd`.
+Mas ao invés de adicionarmos essa tabela diretamente ao algoritmo recursivo, vamos fazer essa adição à sua versão iterativa. (*qualquer problema resolvido com recursão pode ser resolvido com loops*).
 
-::: Gabarito
-``` c
-int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[][W+1]) {
-    if (n == 0 || W == 0) {
-        return 0;
+Dessa forma, o código final e adaptado ficará como abaixo:
+
+```c
+int knapsack(int pesos[], int valores[], int n, int W) {
+    int memo[n+1][W+1];
+    
+    // inicializa casos base: primeira coluna e primeira linha = 0
+    for (int i = 0; i <= n; i++) {
+        memo[i][0] = 0;
+    }
+    for (int w = 0; w <= W; w++) {
+        memo[0][w] = 0;
     }
     
-    if (memo[n][W] != -1) {
-        return memo[n][W];
+    for (int i = 1; i <= n; i++) {
+        for (int w = 1; w <= W; w++) {
+            int sem = memo[i-1][w];
+            int com = 0;
+            if (pesos[i-1] <= w) {
+                com = valores[i-1] + memo[i-1][w - pesos[i-1]];
+            }
+            memo[i][w] = (sem > com) ? sem : com;
+        }
     }
-
-    int resultado;
-    if (pesos[n-1] > W) {
-        resultado = knapsack_pd(pesos, valores, n-1, W, memo);
-    } else {
-        int sem = knapsack_pd(pesos, valores, n-1, W, memo);
-        int com = valores[n-1] + knapsack_pd(pesos, valores, n-1, W - pesos[n-1], memo);
-        resultado = (com > sem) ? com : sem;
-    }
-
-    memo[n][W] = resultado;
-
-    return resultado;
+    
+    return memo[n][W];
 }
 ```
 
+
+??? Atividade
+Esta implementação reduz drasticamente o tempo de execução ao evitar resolver subproblemas que já foram resolvidos.
+
+Tente fazer o **cálculo da nova complexidade** do algoritmo com memoização.
+
+::: Gabarito
+
+Como cada uma das iterações dos dois laços aninhados (`c i = 1..n`, `c w = 1..W`) faz um número constante de operações *(comparar, somar, indexar)*.
+
+Podemos chegar a conclusão que a **complexidade de tempo total é $O(nW)$**.
+
+Além disso, como é criada a tabela de memoização, a complexidade espacial é $O(nW)$
+
+
 :::
 ???
-
-Esta implementação reduz drasticamente o tempo de execução ao evitar resolver subproblemas que já foram resolvidos. A complexidade temporal passa de $O(2^n)$ para $O(n×W)$, onde `c n` é o número de itens e `c W` é a capacidade da mochila.
 
 Veja abaixo, uma animação do preenchimento da tabela utilizando o algoritmo melhorado para o seguinte exemplo:
 
 ```c
-int pesos[] = {8, 7, 9, 4, 5, 2};
-int valores[] = {120, 65, 210, 300, 40, 175};
+int pesos[] = {1, 7, 3, 4, 2, 5};
+int valores[] = {120, 65, 160, 200, 175, 40};
 int n = 6;
 int W = 10;
 ```
 
 :knapsack
 
-Para dar uma ideia da magnitude dessa otimização, pense no exercício abaixo:
 
 ??? Atividade
-Considerando as condições abaixo:
+A partir da tabela preenchida, como podemos fazer para descobrir os itens levados?
 
-`c int pesos[] = [12,  7, 19, 24,  5, 17, 10, 34, 2,  27, 14,  8, 30, 21,  3, 16, 25, 11, 28,`
-`c 9, 20,  6, 18, 29, 13, 22,  4, 26, 15, 31]`
-
-`c int valores = [120,  65, 210, 300,  40, 175, 100, 400, 15, 350, 155,  80, 420, 260,  25, 180,`
-`c 310, 135, 375,  95, 240,  55, 195, 390, 145, 270,  35, 360, 160, 430]`
-
-`c W = 80`
-
-`c n = 30`
-
-Quantas vezes você imagina que o algoritmo recursivo ingênuo será invocado e quantas vezes o algoritmo de programação dinâmica será invocado?
 ::: Gabarito
-O algoritmo ingênuo foi chamado um total de `c 1099019` vezes;
 
-Já o algoritmo de programação dinâmica foi chamado apenas `c 3198` vezes.
-
-Agora tente alterar o valor de `c W` para um número maior que 80.
 :::
 ???
