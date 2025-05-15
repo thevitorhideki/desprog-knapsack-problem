@@ -56,7 +56,7 @@ Tenta pegar o **Item 1**: cabe (10+20 ≤ 50), soma peso = 30, valor = 160
 
 Tenta pegar o **Item 2**: cabe? (30+30 = 60 kg > 50) → **não cabe, ignora**
 
-Dessa forma, colocaríamos os itens 3 e 1 na mochila e teríamos um {red}(**valor final de 160.**) 
+Dessa forma, colocaríamos os itens 3 e 1 na mochila e teríamos um {red}(**valor final de 160.**)
 :::
 ???
 
@@ -79,11 +79,12 @@ Sem listar todas as combinações, **deduza a complexidade** do algoritmo de for
 
 ::: Gabarito
 Para cada um dos `c n` itens, há duas escolhas: incluí-lo (1) ou não (0).  
+
 - Total de combinações possíveis:  $2^n$
 - Avaliar a possibilidade de ser a combinação correta: $n$
 
 Portanto, podemos concluir que o algoritmo de força bruta possui complexidade exponencial $O(2^n)$
-   
+
 :::
 ???
 
@@ -99,6 +100,7 @@ Agora que percebemos que a questão não é tão simples de resolver, vamos para
 Por se tratar de um algoritmo recursivo, vamos precisar implementar a sua base. Com base no que foi visto até agora, qual deverá ser a base dessa recursão?
 
 ::: Gabarito
+
 - Se não temos mais items para considerar (`c n = 0`), o valor é 0;
 - Se a capacidade da mochila é 0, não podemos incluir mais nada, então o valor é 0
 
@@ -109,6 +111,7 @@ if (n == 0 || W == 0) {
     return 0;
 }
 ```
+
 :::
 ???
 
@@ -123,14 +126,15 @@ Liste, de forma objetiva,
 *(não precisa escrever código, a ideia em alto nível será suficiente)*
 
 ::: Gabarito
-1. **Não incluir**: transforma o problema em um subproblema com mochila de mesma capacidade e um número menor de itens, 
-    - `c knapsack(pesos, valores, n−1, W)` 
-2. **Incluir**: transforma o problema em um subproblema com mochila de capacidade menor, um número menor de itens e um valor agregado, 
+
+1. **Não incluir**: transforma o problema em um subproblema com mochila de mesma capacidade e um número menor de itens,
+    - `c knapsack(pesos, valores, n−1, W)`
+2. **Incluir**: transforma o problema em um subproblema com mochila de capacidade menor, um número menor de itens e um valor agregado,
     - `c valores[n−1] + knapsack(pesos, valores, n−1, W−pesos[n−1])`
 :::
 ???
 
-Dessa forma, montamos o algoritmo **recursivo** que resolve o problema da mochila binária: 
+Dessa forma, montamos o algoritmo **recursivo** que resolve o problema da mochila binária:
 
 ``` c
 int knapsack(int pesos[], int valores[], int n, int W) {
@@ -150,63 +154,110 @@ int knapsack(int pesos[], int valores[], int n, int W) {
 }
 ```
 
+??? Atividade
+Baseado no algoritmo que construímos, desenhe como ficaria a árvore de chamadas com *n* items e identifique quantas chamadas são feitas em função de *n*
 
-## VVV ISSO DEVE SER QUEBRADO EM MAIS PARTES VVV
-
-Apesar desse algoritmo funcionar para o problema da mochila binária, ele não eficiente. Vamos pensar: para cada item, fazemos duas escolhas, incluir ou não incluir, isso cria uma árvore de recursão binária completa com altura *n* (número de items) e uma árvore binária com altura *n* tem $2^{n-1}$ nós no pior caso.
+::: Gabarito
 
 ```bash
 knapsack(n, W)
-    knapsack(n-1, W-w4)
-        knapsack(n-2, W-w4-w3)
-            ...
-        knapsack(n-1, W-w4)
-            ...
-    knapsack(n-1, W)
+    knapsack(n-1, W-w3)
+        knapsack(n-2, W-w3-w2)
+            knapsack(n-3, W-w3-w2-w1)
+                ...
+            knapsack(n-3, W-w3-w2)
+                ...
         knapsack(n-2, W-w3)
-            ...
+            knapsack(n-3, W-w3-w1)
+                ...
+            knapsack(n-3, W-w3)
+                ...
+    knapsack(n-1, W)
+        knapsack(n-2, W-w2)
+            knapsack(n-3, W-w2-w1)
+                ...
+            knapsack(n-3, W-w2)
+                ...
         knapsack(n-2, W)
-            ...
+            knapsack(n-3, W-w1)
+                ...
+            knapsack(n-3, W)
+                ...
 ```
+
+Perceba que por conta das duas escolhas: incluir ou não incluir, é criado uma árvore binária de chamadas com altura n, onde cada nível representa uma decisão (incluir ou não o item i). Então, o número total de chamadas recursivas feitas é $2^{n}$
 
 Vamos entender com um exemplo numérico:
 
-* Com 10 itens: até ~1000 chamadas recursivas ($2^{10}$)
-* Com 20 itens: até ~1000000 chamadas recursivas ($2^{20}$)
-* Com 30 itens: até ~1000000000 chamadas recursivas ($2^{30}$)
+- Com 10 itens: até ~1000 chamadas recursivas ($2^{10}$)
+- Com 20 itens: até ~1000000 chamadas recursivas ($2^{20}$)
+- Com 30 itens: até ~1000000000 chamadas recursivas ($2^{30}$)
 
-<br>
+???
 
+??? Atividade
+Agora com base na árvore que fizemos na última atividade, substitua os valores dos pesos pelos dos seguintes items:
+
+| Item | Peso (kg) | Valor |
+|------|-----------|-------|
+| Item 1 | 20 | 100 |
+| Item 2 | 30 | 120 |
+| Item 3 | 10 | 60 |
+
+Alguma chamada se repete?
+
+::: Gabarito
+
+```bash
+knapsack(3, 50)
+    knapsack(2, 40)
+        knapsack(1, 10)
+            # knapsack(0, -10) Inválido
+            knapsack(0, 10)
+        knapsack(1, 40)
+            knapsack(0, 20) # Repete
+            knapsack(0, 40)
+    knapsack(2, 50)
+        knapsack(1, 20)
+            knapsack(0, 0)
+            knapsack(0, 20) # Repete
+        knapsack(1, 50)
+            knapsack(0, 30)
+            knapsack(0, 50)
+```
+
+Como é possível perceber, existe uma chamada que se repete com 3 items, agora imagine um problema com vários items... mais chamadas serão repetidas gastando recursos desnecessários.
+
+???
 
 **Mas pera aí, nós saímos de um algoritmo que funcionava, era mais fácil de entender e tinha mesma complexidade que esse aqui. Por que eu iria querer usar a versão recursiva?**
 
 Vamos nos acalmar que tudo o que foi apresentado até agora servirá de alicerce para uma otimização tremenda para esse algoritmo.
 
-
 ## O algoritmo melhorado
 
-Para superar o problema da complexidade crescer muito rapidamente na abordagem recursiva pura, utilizaremos **Programação Dinâmica**. 
+Para superar o problema da complexidade crescer muito rapidamente na abordagem recursiva pura, utilizaremos **Programação Dinâmica**.
 
 A ideia central do algoritmo é construirmos uma **tabela** que armazena as soluções ótimas de subproblemas menores, evitando recalcular recursivamente o mesmo estado várias vezes. Essa estratégia é conhecida como [memoização](https://en.wikipedia.org/wiki/Memoization).
 
 Começaremos entendendo o que é a tabela:
 
 - Vamos criar uma matriz `c memo` de dimensões `c (n+1) x (W+1)`, onde:
-    - `c n` é o número de itens.
-    - `c W` é a capacidade máxima da mochila.
-    
+  - `c n` é o número de itens.
+  - `c W` é a capacidade máxima da mochila.
+
 - Cada célula `c memo[i][w]` irá guardar o **valor máximo** que podemos obter considerando apenas os primeiros `c i` itens e uma capacidade de mochila `c w`.
 - A tabela deve ser inicializada com todas as suas células `c memo[i][w] = -1`.
-
-<br>
 
 ??? Atividade
 Considerando a função `c knapsack` definida anteriormente, como deveria ser a nova assinatura da função `c knapsack_pd` para que a tabela de memoização seja incluída?
 
 ::: Gabarito
+
 ``` c
 int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[][W+1]);
 ```
+
 :::
 ???
 
@@ -214,6 +265,7 @@ int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[][W+1]);
 Escreva o conteúdo da função `c knapsack_pd`.
 
 ::: Gabarito
+
 ``` c
 int knapsack_pd(int pesos[], int valores[], int n, int W, int memo[][W+1]) {
     if (n == 0 || W == 0) {
