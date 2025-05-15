@@ -185,7 +185,7 @@ knapsack(n, W)
                 ...
 ```
 
-Perceba que por conta das duas escolhas: incluir ou não incluir, é criado uma árvore binária de chamadas com altura n, onde cada nível representa uma decisão (incluir ou não o item i). Então, o número total de chamadas recursivas feitas é $2^{n}$
+Perceba que por conta das duas escolhas: incluir ou não incluir, é criado uma árvore binária de chamadas com altura n, onde cada nível representa uma decisão (incluir ou não o item `c i`). Então, o número total de chamadas recursivas feitas é $2^{n}$
 
 Vamos entender com um exemplo numérico:
 
@@ -256,7 +256,7 @@ Considerando os valores abaixo:
 int pesos[] = {1, 7, 3, 4, 2, 5};
 int valores[] = {120, 65, 160, 200, 175, 40};
 int n = 6;
-int W = 10;
+int W = 8;
 ```
 
 Quais são os valores que preenchem corretamente as células `c memo[i][0]` *(todas as células da primeira linha)* e `c memo[0][w]` *(todas as células da primeira coluna)*.
@@ -272,7 +272,7 @@ Dessa forma, tanto a primeira linha quanto a primeira coluna devem ter seus valo
 :::
 ???
 
-Mas ao invés de adicionarmos essa tabela diretamente ao algoritmo recursivo, vamos fazer essa adição à sua versão iterativa. (*qualquer problema resolvido com recursão pode ser resolvido com loops*).
+Mas ao invés de adicionarmos essa tabela diretamente ao algoritmo recursivo, vamos fazer essa adição à sua versão iterativa *(qualquer problema resolvido com recursão pode ser resolvido com loops)*.
 
 Dessa forma, o código final e adaptado ficará como abaixo:
 
@@ -337,6 +337,27 @@ int W = 10;
 A partir da tabela preenchida, como podemos fazer para descobrir os itens levados?
 
 ::: Gabarito
+Para saber se o item `c i` foi incluído no valor ótimo em `c memo[i][w]`, basta comparar esse número com `c memo[i–1][w]` *(a célula imediatamente acima)*:
 
+
+Se `c memo[i][w] == memo[i-1][w]`, a solução ótima **não** inclui o item `c i` e a análise deve seguir na mesma coluna.
+
+Se `c memo[i][w] > memo[i-1][w]`, a solução ótima **inclui** o item `c i` e a próxima análise deverá ser feita na coluna referente ao peso atual menos o peso do item.
+:::
+???
+
+??? Exercício
+Identifique os itens que foram levados na mochila para a solução ótima.
+
+![](tabela_completa.png)
+
+::: Gabarito
+:solucao
+
+Ao fim, foram escolhidos os itens:
+
+- Item 1: peso=1, valor=120
+- Item 4: peso=4, valor=200
+- Item 5: peso=2, valor=175
 :::
 ???
