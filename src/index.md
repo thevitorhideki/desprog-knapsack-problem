@@ -77,6 +77,8 @@ Outra abordagem é usar **força bruta**. Essa abordagem é mais simples, pois b
 ??? Atividade
 Sem listar todas as combinações, **deduza a complexidade** do algoritmo de força bruta em termos de `c n` (número de itens).
 
+*Dica: lembre-se que para todo e qualquer item temos apenas duas escolhas, levá-lo ou não.*
+
 ::: Gabarito
 Para cada um dos `c n` itens, há duas escolhas: incluí-lo (1) ou não (0).  
 
@@ -96,15 +98,44 @@ Como foi possível observar, o algoritmo guloso nem sempre resolve o problema, j
 
 Agora que percebemos que a questão não é tão simples de resolver, vamos para a abordagem recursiva. Nela vamos dividir o problema em subproblemas menores, com menos items e/ou menor capacidade, seguindo a ideia de [dividir e conquistar](https://en.wikipedia.org/wiki/Divide-and-conquer_algorithm).
 
+Por se tratar de um algoritmo recursivo, vamos precisar implementar a sua base. Para isso, vamos às atividades abaixo:
+
 ??? Atividade
-Por se tratar de um algoritmo recursivo, vamos precisar implementar a sua base. Com base no que foi visto até agora, qual deverá ser a base dessa recursão?
+Considere um cenário onde não há itens para colocar na mochila. Qual seria o valor máximo que podemos obter?
 
 ::: Gabarito
 
 - Se não temos mais items para considerar (`c n = 0`), o valor é 0;
+
+Portanto:
+
+``` c
+if (n == 0) {
+    return 0;
+}
+```
+:::
+???
+
+
+??? Atividade
+Agora, imagine uma mochila com capacidade zero. Mesmo que existam itens, o que podemos colocar nela? Qual seria o valor máximo nesse caso?
+
+::: Gabarito
+
 - Se a capacidade da mochila é 0, não podemos incluir mais nada, então o valor é 0
 
 Portanto:
+
+``` c
+if (W == 0) {
+    return 0;
+}
+```
+:::
+???
+
+Portanto, se combinarmos as duas condições de parada da nossa função recursiva, chegaremos ao seguinte resultado:
 
 ``` c
 if (n == 0 || W == 0) {
@@ -112,25 +143,35 @@ if (n == 0 || W == 0) {
 }
 ```
 
-:::
-???
-
 Após termos a base da recursão definida, precisaremos nos atentar aos casos em que a recursão será invocada.
 
 ??? Atividade
 Liste, de forma objetiva,  
 
-1. os dois subproblemas que aparecem em cada chamada (incluir o item ou não),
-2. como mudam os parâmetros `c n` (número de itens restantes) e `c W` (capacidade restante) em cada um.
+1. O subproblema criado ao escolher **NÃO INCLUIR** o item na mochila,
+2. como mudam os parâmetros `c n` (número de itens restantes) e `c W` (capacidade restante) nesse caso.
 
 *(não precisa escrever código, a ideia em alto nível será suficiente)*
 
 ::: Gabarito
+**Não incluir**: transforma o problema em um subproblema com mochila de mesma capacidade e um número menor de itens, 
 
-1. **Não incluir**: transforma o problema em um subproblema com mochila de mesma capacidade e um número menor de itens,
-    - `c knapsack(pesos, valores, n−1, W)`
-2. **Incluir**: transforma o problema em um subproblema com mochila de capacidade menor, um número menor de itens e um valor agregado,
-    - `c valores[n−1] + knapsack(pesos, valores, n−1, W−pesos[n−1])`
+- `c knapsack(pesos, valores, n−1, W)`
+:::
+???
+
+??? Atividade
+Liste, de forma objetiva,  
+
+1. O subproblema criado ao escolher **INCLUIR** o item na mochila,
+2. como mudam os parâmetros `c n` (número de itens restantes) e `c W` (capacidade restante) nesse caso.
+
+*(não precisa escrever código, a ideia em alto nível será suficiente)*
+
+:::
+**Incluir**: transforma o problema em um subproblema com mochila de capacidade menor, um número menor de itens e um valor agregado, 
+
+- `c valores[n−1] + knapsack(pesos, valores, n−1, W−pesos[n−1])`
 :::
 ???
 
@@ -327,7 +368,7 @@ Veja abaixo, uma animação do preenchimento da tabela utilizando o algoritmo me
 int pesos[] = {1, 7, 3, 4, 2, 5};
 int valores[] = {120, 65, 160, 200, 175, 40};
 int n = 6;
-int W = 10;
+int W = 8;
 ```
 
 :knapsack

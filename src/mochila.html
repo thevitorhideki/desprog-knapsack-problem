@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KnapSack Problem</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: #ffffff; /* Fundo branco */
+            color: #000000; /* Texto preto */
+            line-height: 1.6; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container { 
+            display: flex; 
+            flex-direction: column; /* Layout vertical */
+            align-items: center; /* Centraliza as seções */
+            gap: 25px; 
+            width: 100%;
+            max-width: 900px; /* Largura máxima para as seções */
+        }
+        .input-section, .output-section, .animation-section { 
+            background-color: #ffffff; 
+            padding: 25px; 
+            border-radius: 8px; 
+            border: 1px solid #cccccc; /* Borda cinza claro */
+            width: 100%; 
+            box-sizing: border-box;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .animation-section { 
+            overflow-x: auto; /* Rolagem horizontal para tabelas grandes */
+        }
+        h2 { 
+            color: #000000; 
+            border-bottom: 2px solid #000000; 
+            padding-bottom: 10px; 
+            margin-top:0; 
+        }
+        h3 { 
+            color: #000000; 
+            margin-top: 20px; 
+            margin-bottom:10px; 
+        }
+        label { 
+            display: block; 
+            margin-top: 15px; 
+            margin-bottom: 8px; 
+            font-weight: 600; 
+            color: #333333; /* Cinza escuro para labels */
+        }
+        input[type="text"], input[type="number"] { 
+            width: calc(100% - 24px); 
+            padding: 12px; 
+            margin-bottom: 15px; 
+            border: 1px solid #999999; /* Borda cinza médio */
+            border-radius: 5px; 
+            box-sizing: border-box; 
+            transition: border-color 0.3s; 
+            background-color: #ffffff;
+            color: #000000;
+        }
+        input[type="text"]:focus, input[type="number"]:focus { 
+            border-color: #000000; /* Borda preta no foco */
+            outline: none; 
+        }
+        button { 
+            background-color: #000000; /* Botão preto */
+            color: #ffffff; /* Texto branco no botão */
+            padding: 12px 18px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            margin-right: 10px; 
+            margin-top:15px; 
+            transition: background-color 0.3s; 
+            font-weight: 600; 
+        }
+        button:hover { 
+            background-color: #333333; /* Cinza escuro no hover */
+        }
+        button:disabled { 
+            background-color: #cccccc; /* Cinza claro para desabilitado */
+            color: #666666; /* Texto cinza médio para desabilitado */
+            cursor: not-allowed; 
+        }
+        #dpTableContainer table { 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            width:100%; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        #dpTableContainer th, #dpTableContainer td { 
+            border: 1px solid #bbbbbb; /* Borda cinza para células da tabela */
+            padding: 8px 10px; 
+            text-align: center; 
+            font-size:0.9em; 
+            transition: background-color 0.3s; 
+        }
+        #dpTableContainer th { 
+            background-color: #f0f0f0; /* Fundo cinza muito claro para cabeçalho da tabela */
+            color: #000000; /* Texto preto */
+            font-weight: 600; 
+        }
+        /* Cor de texto para células da tabela será preto (herdado), a menos que o JS especifique */
+        #selectedItemsBox { 
+            margin-top: 10px; 
+            padding:15px; 
+            background-color:#f5f5f5; /* Fundo cinza claro */
+            border-left: 5px solid #000000; /* Destaque preto */
+            border-radius: 5px; 
+        }
+        #selectedItemsBox ul { 
+            padding-left: 20px; 
+            margin:0; 
+        }
+        #selectedItemsBox li { 
+            margin-bottom: 5px; 
+        }
+        #totalValueBox { 
+            font-weight:bold; 
+            color:#000000; /* Valor total em preto */
+            font-size:1.3em; 
+            margin-top:10px; 
+        }
+        #animationStatus { 
+            margin-top: 15px; 
+            font-style: italic; 
+            color: #000000; 
+            background-color: #f0f0f0; /* Fundo cinza claro */
+            padding: 10px; 
+            border-radius: 5px; 
+            border: 1px solid #cccccc; 
+            min-height: 40px;
+        }
+        .highlight-cell { /* Célula atualmente sendo calculada */
+            background-color: #e0e0e0 !important; /* Fundo cinza claro para destaque P&B */
+            border: 1px dashed #333333 !important; /* Borda tracejada escura */
+            /* O texto da célula permanece preto (herdado) */
+        }
+        .item-chosen { /* Células do caminho da solução na tabela */
+            /* O fundo já é um degradê azul via JS */
+            border: 2.5px solid #000000 !important; /* Borda preta grossa para destacar no azul */
+            /* Opcional: Mudar cor do texto se o azul for muito escuro, mas o texto preto deve funcionar bem com o degradê azul claro->médio */
+            /* color: white !important; */ 
+        }
+        #resetButton { 
+            background-color: #444444; /* Cinza escuro para o botão Reset */
+        }
+        #resetButton:hover { 
+            background-color: #222222; /* Cinza mais escuro no hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="input-section">
+            <h2>Problema da Mochila com Programação Dinâmica</h2>
+            <label for="itemValues">Valores dos Itens (separados por vírgula):</label>
+            <input type="text" id="itemValues" placeholder="Ex: 6,10,12" value="6,10,12">
+
+            <label for="itemWeights">Pesos dos Itens (separados por vírgula):</label>
+            <input type="text" id="itemWeights" placeholder="Ex: 1,2,3" value="1,2,3">
+
+            <label for="knapsackCapacity">Capacidade da Mochila:</label>
+            <input type="number" id="knapsackCapacity" placeholder="Ex: 5" value="5">
+
+            <button onclick="solveAll()" id="solveAllButton">Resolver Tudo <emoji>💡</emoji></button>
+            <button onclick="startAnimation()" id="startAnimationButton">Animação Passo a Passo <emoji>▶️</emoji></button>
+            <button onclick="nextStep()" id="nextStepButton" style="display:none;">Próximo Passo <emoji>➡️</emoji></button>
+            <button onclick="reset()" id="resetButton" >Resetar <emoji>🔄</emoji></button>
+        </div>
+
+        <div class="animation-section">
+            <h3>Tabela de Programação Dinâmica (DP)</h3>
+            <div id="dpTableContainer">
+                </div>
+            <div id="animationStatus">
+                Insira os dados e clique em um dos botões para começar.
+            </div>
+        </div>
+
+        <div class="output-section">
+            <h3><emoji>🏆</emoji> Itens Escolhidos</h3>
+            <div id="selectedItemsBox">
+                <p>Os itens selecionados aparecerão aqui.</p>
+            </div>
+            <h3><emoji>💰</emoji> Valor Total Máximo</h3>
+            <div id="totalValueBox">
+                -
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let values = [];
+        let weights = [];
+        let capacity = 0;
+        let n = 0; // number of items
+        let dp = []; // The DP table
+        let animationSteps = [];
+        let currentStepIndex = -1;
+        let maxPossibleValueInTable = 0;
+
+        const solveAllButton = document.getElementById('solveAllButton');
+        const startAnimationButton = document.getElementById('startAnimationButton');
+        const nextStepButton = document.getElementById('nextStepButton');
+        const resetButton = document.getElementById('resetButton');
+        const animationStatusDiv = document.getElementById('animationStatus');
+        const dpTableContainerDiv = document.getElementById('dpTableContainer');
+        const selectedItemsBoxDiv = document.getElementById('selectedItemsBox');
+        const totalValueBoxDiv = document.getElementById('totalValueBox');
+
+        function parseInputs() {
+            const valuesStr = document.getElementById('itemValues').value;
+            const weightsStr = document.getElementById('itemWeights').value;
+            const capacityStr = document.getElementById('knapsackCapacity').value;
+
+            if (!valuesStr || !weightsStr || !capacityStr) {
+                animationStatusDiv.innerHTML = "<strong style='color:red;'>Erro:</strong> Por favor, preencha todos os campos."; // Erro em vermelho é mantido para destaque
+                return false;
+            }
+
+            values = valuesStr.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v) && v >= 0);
+            weights = weightsStr.split(',').map(w => parseInt(w.trim())).filter(w => !isNaN(w) && w >= 0);
+            capacity = parseInt(capacityStr);
+
+            if (values.length === 0 || weights.length === 0 || isNaN(capacity) || capacity < 0) {
+                animationStatusDiv.innerHTML = "<strong style='color:red;'>Erro:</strong> Entradas inválidas. Verifique os valores, pesos e capacidade (devem ser números não negativos).";
+                return false;
+            }
+
+            if (values.length !== weights.length) {
+                animationStatusDiv.innerHTML = "<strong style='color:red;'>Erro:</strong> A quantidade de valores deve ser igual à quantidade de pesos.";
+                return false;
+            }
+            n = values.length;
+            return true;
+        }
+
+        function generateGradientColor(value, maxValue) {
+            // Esta função de gradiente azul permanece a mesma
+            if (maxValue === 0) return 'hsl(210, 30%, 96%)'; 
+            if (value === 0) return 'hsl(210, 30%, 92%)'; 
+
+            const ratio = Math.min(value / maxValue, 1); 
+            const saturation = 50 + (ratio * 30); 
+            const lightness = 90 - (ratio * 45);  
+            return `hsl(200, ${saturation}%, ${lightness}%)`;
+        }
+
+        function initializeDpTable() {
+            dp = [];
+            for (let i = 0; i <= n; i++) {
+                dp[i] = Array(capacity + 1).fill(0);
+            }
+        }
+        
+        function deepCopyTable(table) {
+            return table.map(arr => arr.slice());
+        }
+
+        function solveKnapsackAlgorithm() {
+            animationSteps = [];
+            initializeDpTable();
+            maxPossibleValueInTable = 0;
+
+            animationSteps.push({
+                dpTable: deepCopyTable(dp),
+                i: -1, w: -1, 
+                message: `Tabela DP inicializada com zeros. Itens: ${n}, Capacidade: ${capacity}.`,
+                highlight: null
+            });
+
+            for (let i = 0; i <= n; i++) {
+                for (let w = 0; w <= capacity; w++) {
+                    let message = "";
+                    if (i === 0 || w === 0) {
+                        dp[i][w] = 0;
+                        message = `Caso base: dp[${i}][${w}] = 0. (Sem itens ou sem capacidade).`;
+                    } else {
+                        const currentItemIndex = i - 1; 
+                        const itemValue = values[currentItemIndex];
+                        const itemWeight = weights[currentItemIndex];
+                        
+                        message = `Analisando dp[${i}][${w}]: Item ${i} (Valor: ${itemValue}, Peso: ${itemWeight}).`;
+
+                        if (itemWeight <= w) {
+                            const valueWithItem = itemValue + dp[i - 1][w - itemWeight];
+                            const valueWithoutItem = dp[i - 1][w];
+                            
+                            if (valueWithItem > valueWithoutItem) {
+                                dp[i][w] = valueWithItem;
+                                message += `<br/>Incluir o item ${i} é melhor: ${itemValue} (item ${i}) + ${dp[i-1][w-itemWeight]} (dp[${i-1}][${w-itemWeight}]) = <strong>${dp[i][w]}</strong>.`;
+                            } else {
+                                dp[i][w] = valueWithoutItem;
+                                message += `<br/>Não incluir o item ${i} é melhor ou igual: dp[${i-1}][${w}] = <strong>${dp[i][w]}</strong>.`;
+                            }
+                        } else {
+                            dp[i][w] = dp[i - 1][w];
+                            message += `<br/>Item ${i} (peso ${itemWeight}) excede a capacidade atual (${w}). dp[${i}][${w}] = dp[${i-1}][${w}] = <strong>${dp[i][w]}</strong>.`;
+                        }
+                    }
+                    if (dp[i][w] > maxPossibleValueInTable) {
+                        maxPossibleValueInTable = dp[i][w];
+                    }
+                    animationSteps.push({
+                        dpTable: deepCopyTable(dp),
+                        i: i, w: w,
+                        message: message,
+                        highlight: {row: i, col: w}
+                    });
+                }
+            }
+            return dp;
+        }
+
+        function renderTable(currentDp, highlightCell = null, chosenPathCells = []) {
+            let tableHTML = '<table><thead><tr><th>Item\\Cap.</th>';
+            for (let w = 0; w <= capacity; w++) {
+                tableHTML += `<th>${w}</th>`;
+            }
+            tableHTML += '</tr></thead><tbody>';
+
+            for (let i = 0; i <= n; i++) {
+                tableHTML += `<tr><th>${i === 0 ? '0' : `I${i}`}</th>`;
+                for (let w = 0; w <= capacity; w++) {
+                    let cellStyle = `background-color: ${generateGradientColor(currentDp[i][w], maxPossibleValueInTable)};`;
+                    let cellClass = '';
+                    
+                    if (chosenPathCells.some(p => p.row === i && p.col === w)) {
+                        cellClass = 'item-chosen'; 
+                    }
+                    // Aplicar highlight-cell se for a célula ativa E não for uma célula do caminho já com estilo 'item-chosen', OU se for, permitir que ambas as classes sejam aplicadas (CSS decidirá com !important)
+                    if (highlightCell && highlightCell.row === i && highlightCell.col === w) {
+                        cellClass = cellClass ? `${cellClass} highlight-cell` : 'highlight-cell';
+                    }
+
+                    tableHTML += `<td style="${cellStyle}" class="${cellClass}">${currentDp[i][w]}</td>`;
+                }
+                tableHTML += '</tr>';
+            }
+            tableHTML += '</tbody></table>';
+            dpTableContainerDiv.innerHTML = tableHTML;
+        }
+        
+        function getSelectedItems(finalDp) {
+            if (!finalDp || finalDp.length === 0 || finalDp[0].length === 0) {
+                return { itemsList: [], pathCells: [], totalValue: 0 };
+            }
+
+            let itemsList = [];
+            let currentW = capacity;
+            let currentVal = finalDp[n][capacity];
+            let pathCells = [{row: n, col: currentW}]; 
+
+            for (let i = n; i > 0 && currentVal > 0; i--) {
+                if (currentVal === finalDp[i-1][currentW]) {
+                    pathCells.push({row: i-1, col: currentW});
+                } else { 
+                    const itemIndex = i - 1;
+                    itemsList.push({
+                        name: `Item ${i}`, 
+                        value: values[itemIndex],
+                        weight: weights[itemIndex],
+                        originalIndex: itemIndex + 1
+                    });
+                    currentVal -= values[itemIndex];
+                    currentW -= weights[itemIndex];
+                    pathCells.push({row: i-1, col: currentW});
+                }
+            }
+            itemsList.reverse(); 
+            pathCells.reverse();
+            return { itemsList, pathCells, totalValue: finalDp[n][capacity] };
+        }
+
+        function displayResults(itemsList, totalVal) {
+            if (itemsList.length > 0) {
+                let html = "<ul>";
+                itemsList.forEach(item => {
+                    html += `<li>${item.name} (Valor: ${item.value}, Peso: ${item.weight})</li>`;
+                });
+                html += "</ul>";
+                selectedItemsBoxDiv.innerHTML = html;
+            } else {
+                selectedItemsBoxDiv.innerHTML = "<p>Nenhum item foi escolhido.</p>";
+            }
+            totalValueBoxDiv.innerHTML = `${totalVal}`;
+        }
+        
+        function setButtonsState(isSolvingOrAnimating) {
+            solveAllButton.disabled = isSolvingOrAnimating;
+            startAnimationButton.disabled = isSolvingOrAnimating;
+            // Mostrar botão "Próximo Passo" apenas durante a animação e se não for o último passo
+            nextStepButton.style.display = (isSolvingOrAnimating && currentStepIndex > -1 && currentStepIndex < animationSteps.length - 1) ? 'inline-block' : 'none';
+            resetButton.disabled = (isSolvingOrAnimating && currentStepIndex > -1 && currentStepIndex < animationSteps.length -1);
+        }
+
+        function solveAll() {
+            if (!parseInputs()) return;
+            animationStatusDiv.innerHTML = "Resolvendo... Por favor, aguarde um momento. <emoji>⏳</emoji>";
+            setButtonsState(true);
+            
+            setTimeout(() => { 
+                const finalDpTable = solveKnapsackAlgorithm(); 
+                currentStepIndex = animationSteps.length -1; 
+                
+                const { itemsList, pathCells, totalValue } = getSelectedItems(finalDpTable);
+                displayResults(itemsList, totalValue);
+                renderTable(finalDpTable, null, pathCells); 
+                
+                animationStatusDiv.innerHTML = `<strong>Solução Completa!</strong> Valor Máximo Alcançado: ${totalValue}. Total de ${currentStepIndex} passos de cálculo.`;
+                setButtonsState(false);
+                resetButton.disabled = false;
+            }, 50); 
+        }
+
+        function startAnimation() {
+            if (!parseInputs()) return;
+            animationStatusDiv.innerHTML = "Iniciando animação... <emoji>🎬</emoji>";
+            setButtonsState(true);
+
+            setTimeout(() => { 
+                solveKnapsackAlgorithm(); 
+
+                if (animationSteps.length === 0) {
+                    animationStatusDiv.innerHTML = "<strong style='color:red;'>Erro:</strong> Não foi possível gerar os passos da animação.";
+                    setButtonsState(false);
+                    return;
+                }
+                currentStepIndex = 0;
+                renderCurrentStep();
+                // setButtonsState(true) já foi chamado, mas aqui garantimos que o nextStepButton apareça se houver próximos passos
+                if (animationSteps.length > 1) { // Mais que o passo inicial
+                    nextStepButton.style.display = 'inline-block';
+                } else {
+                    nextStepButton.style.display = 'none'; // Caso só haja o passo inicial (ex: 0 itens)
+                    setButtonsState(false); // Libera botões se não há mais passos
+                }
+                resetButton.disabled = true; // Desabilitar reset durante a sequência de animação
+            }, 50);
+        }
+
+        function nextStep() {
+            if (currentStepIndex < animationSteps.length - 1) {
+                currentStepIndex++;
+                renderCurrentStep();
+                 if (currentStepIndex === animationSteps.length - 1) { 
+                    const finalStepData = animationSteps[currentStepIndex];
+                    const { itemsList, pathCells, totalValue } = getSelectedItems(finalStepData.dpTable);
+                    displayResults(itemsList, totalValue);
+                    renderTable(finalStepData.dpTable, finalStepData.highlight, pathCells); 
+                    
+                    animationStatusDiv.innerHTML = `<strong>Animação Concluída!</strong> ${finalStepData.message} <br/>Valor Máximo: ${totalValue}.`;
+                    nextStepButton.style.display = 'none';
+                    setButtonsState(false); // Libera botões principais
+                    resetButton.disabled = false;
+                } else {
+                     nextStepButton.style.display = 'inline-block'; 
+                }
+            }
+        }
+        
+        function renderCurrentStep() {
+            if (currentStepIndex < 0 || currentStepIndex >= animationSteps.length) return;
+
+            const step = animationSteps[currentStepIndex];
+            renderTable(step.dpTable, step.highlight); 
+            
+            let statusMsg = `Passo ${currentStepIndex} de ${animationSteps.length - 1}.<br>${step.message}`;
+            if (currentStepIndex === 0 && animationSteps[0].i === -1) statusMsg = step.message; 
+
+            animationStatusDiv.innerHTML = statusMsg;
+            
+            if (currentStepIndex < animationSteps.length - 1) {
+                selectedItemsBoxDiv.innerHTML = "<p>Os itens selecionados aparecerão no final da animação.</p>";
+                totalValueBoxDiv.innerHTML = "-";
+            }
+        }
+
+        function reset() {
+            values = [];
+            weights = [];
+            capacity = 0;
+            n = 0;
+            dp = [];
+            animationSteps = [];
+            currentStepIndex = -1;
+            maxPossibleValueInTable = 0;
+
+            document.getElementById('itemValues').value = '6,10,12'; 
+            document.getElementById('itemWeights').value = '1,2,3';
+            document.getElementById('knapsackCapacity').value = '5';
+
+            dpTableContainerDiv.innerHTML = '';
+            animationStatusDiv.innerHTML = 'Insira os dados e clique em um dos botões para começar.';
+            selectedItemsBoxDiv.innerHTML = '<p>Os itens selecionados aparecerão aqui.</p>';
+            totalValueBoxDiv.innerHTML = '-';
+
+            setButtonsState(false);
+            resetButton.disabled = false;
+        }
+
+        window.onload = () => {
+            animationStatusDiv.innerHTML = 'Insira os dados (ou use os exemplos) e clique em um botão para começar.';
+        };
+
+    </script>
+</body>
+</html>
